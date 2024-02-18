@@ -168,7 +168,8 @@ PRODUCT_COPY_FILES += \
 
 # Health
 PRODUCT_PACKAGES += \
-    android.hardware.health-service.qti
+    android.hardware.health-service.qti \
+    android.hardware.health-service.qti_recovery
 
 # ION
 $(call soong_config_set_bool,libion,legacy_impl,true)
