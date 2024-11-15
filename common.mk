@@ -128,8 +128,7 @@ PRODUCT_COPY_FILES += \
 
 # DRM
 PRODUCT_PACKAGES += \
-    android.hardware.drm-service.clearkey \
-    wvmkiller
+    android.hardware.drm-service.clearkey
 
 # Face unlock
 TARGET_FACE_UNLOCK_SUPPORTED := true
