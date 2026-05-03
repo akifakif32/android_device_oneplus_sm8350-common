@@ -3,6 +3,7 @@
 # Define paths
 PATCH_DIR="device/oneplus/sm8350-common/patches"
 GAMESPACE_DIR="packages/apps/GameSpace"
+VENDOR_GMS_DIR="vendor/gms"
 
 # Apply GameSpace live overlay sync patch if not already applied
 if [ -d "$GAMESPACE_DIR" ]; then
@@ -29,4 +30,31 @@ if [ -d "$GAMESPACE_DIR" ]; then
     fi
     
     cd ../../../
+fi
+
+# Apply vendor/gms Android.bp patch
+if [ -d "$VENDOR_GMS_DIR" ]; then
+    echo "Checking vendor/gms patches..."
+    cd $VENDOR_GMS_DIR
+    
+    # Check if the patch is already applied
+    git diff --quiet common/Android.bp
+    
+    # If the file hasn't been modified yet, try to patch it
+    if [ $? -eq 0 ]; then
+        echo "Applying vendor/gms Android.bp patch..."
+        git apply ../../$PATCH_DIR/vendor_gms_android_bp.patch >/dev/null 2>&1
+        
+        # Commit the patch so we know it's applied
+        if [ $? -eq 0 ]; then
+             git add common/Android.bp
+             git commit -m "vendor/gms: Remove Dialer and messaging overrides from Android.bp"
+        else
+             echo "Warning: Could not apply vendor/gms patch. Maybe already applied."
+        fi
+    else
+        echo "vendor/gms patch already active."
+    fi
+    
+    cd ../../
 fi
