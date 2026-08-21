@@ -109,6 +109,11 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
 
 # Device settings
+# LineageOS/OPLUS per-device settings app (touchpanel edge-touch/game-mode,
+# USB fast charge, vibrator intensity). Ported from Jammy555's sm8350-common
+# Sakura branch with PowerTools (CPU/GPU/IO-scheduler tuning, game-space sync,
+# system monitor widget) excluded entirely -- not something this tree carries.
+# Selective band lock (network/) ships in a separate commit.
 PRODUCT_PACKAGES += \
     DeviceSettings
 
