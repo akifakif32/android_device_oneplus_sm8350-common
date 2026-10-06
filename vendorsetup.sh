@@ -32,3 +32,4 @@ apply_patch() {
 }
 
 apply_patch "frameworks/base" "../../$PATCH_DIR/frameworks_base_camera2_high_speed_ranges_from_supported_target.patch" "camera2: createHighSpeedRequestList() takes the fps ranges from a target whose size is an advertised high speed size instead of whichever target getTargets() lists first, so a privileged camera app recording a larger surface in a constrained high speed session no longer fails at random"
+apply_patch "frameworks/base" "../../$PATCH_DIR/frameworks_base_camera2_remember_missing_vendor_tags.patch" "camera2: CameraMetadataNative remembers for 5 s that a key's tag lookup failed instead of repeating the native lookup, error log line and exception on every get()/set() of a vendor key the HAL does not define"
