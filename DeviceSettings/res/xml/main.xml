@@ -29,6 +29,13 @@
             android:defaultValue="false"
             android:summary="@string/iris_memc_summary"
             android:title="@string/iris_memc_title" />
+
+        <Preference
+            android:key="iris_memc_apps"
+            android:dependency="iris_memc"
+            android:fragment="org.lineageos.device.DeviceSettings.iris.IrisAppsFragment"
+            android:summary="@string/iris_memc_apps_summary"
+            android:title="@string/iris_memc_apps_title" />
     </PreferenceCategory>
 
     <PreferenceCategory

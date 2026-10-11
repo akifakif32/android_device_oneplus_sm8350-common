@@ -24,6 +24,18 @@
     <string name="iris_memc_title">Motion smoothing</string>
     <string name="iris_memc_summary">Add frames to video in supported player apps so motion looks smoother. Uses more battery; off in battery saver</string>
     <string name="iris_memc_started">Motion smoothing started</string>
+    <string name="iris_memc_apps_title">Apps</string>
+    <string name="iris_memc_apps_summary">Choose the apps and screens motion smoothing works in</string>
+    <string name="iris_memc_apps_hint">Tap an app to choose where motion smoothing is used. Apps that are already set up are listed first</string>
+    <string name="iris_memc_whole_app">Whole app</string>
+    <string name="iris_memc_whole_app_summary">Use motion smoothing everywhere in this app, not only on the screens ticked below</string>
+    <string name="iris_memc_recent_screens">Recently on screen</string>
+    <string name="iris_memc_recent_hint">Play a video in this app, then come back. The screen it was shown on will be listed here</string>
+    <string name="iris_memc_all_screens">All screens</string>
+    <plurals name="iris_memc_screens">
+        <item quantity="one">%d screen</item>
+        <item quantity="other">%d screens</item>
+    </plurals>
 
     <!-- Video enhancement (OPLUS decoder filter) -->
     <string name="video_title">Video enhancement</string>

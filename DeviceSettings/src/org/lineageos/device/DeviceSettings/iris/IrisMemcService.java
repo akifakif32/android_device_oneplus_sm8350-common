@@ -14,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -36,7 +37,8 @@ import vendor.pixelworks.hardware.display.V1_0.IIrisCallback;
  * Motion smoothing (MEMC) on the Pixelworks Iris5 chip.
  *
  * The chip sits in analog bypass until it is told otherwise. While one of the
- * video player activities or packages in R.array.iris_memc_activities is on
+ * apps or screens picked in IrisAppsFragment (R.array.iris_memc_activities
+ * until the user changes the list) is on
  * top, this service takes it out of bypass and selects the MEMC mode through the Iris
  * HAL; when the activity leaves, the screen turns off or battery saver comes
  * on, it puts the chip back in bypass.
@@ -119,6 +121,17 @@ public class IrisMemcService extends Service {
         }
     };
 
+    // Kept in a field: the preferences only hold a weak reference to it.
+    private final SharedPreferences.OnSharedPreferenceChangeListener mEntriesListener =
+            (prefs, key) -> {
+                if (IrisApps.KEY_ENTRIES.equals(key)) {
+                    mHandler.post(() -> {
+                        loadEntries();
+                        scheduleUpdate(0);
+                    });
+                }
+            };
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -129,13 +142,12 @@ public class IrisMemcService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        for (String component : getResources().getStringArray(R.array.iris_memc_activities)) {
-            mActivities.add(component.substring(component.indexOf('/') + 1));
-        }
-
         mThread = new HandlerThread(TAG);
         mThread.start();
         mHandler = new Handler(mThread.getLooper());
+        mHandler.post(this::loadEntries);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(mEntriesListener);
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
@@ -158,6 +170,8 @@ public class IrisMemcService extends Service {
             Log.e(TAG, "Failed to unregister task stack listener", e);
         }
         unregisterReceiver(mReceiver);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(mEntriesListener);
         mHandler.removeCallbacksAndMessages(null);
         mHandler.post(() -> setMemc(HDR_FORMAL_NONE));
         mThread.quitSafely();
@@ -172,6 +186,14 @@ public class IrisMemcService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    /** Only the class name of an activity entry is compared. */
+    private void loadEntries() {
+        mActivities.clear();
+        for (String entry : IrisApps.getEntries(this)) {
+            mActivities.add(entry.substring(entry.indexOf('/') + 1));
+        }
     }
 
     private void scheduleUpdate(long delayMs) {
@@ -201,6 +223,9 @@ public class IrisMemcService extends Service {
             if (!name.equals(mLastTop)) {
                 Log.d(TAG, "top activity " + name + ", HDR formal " + formal);
                 mLastTop = name;
+                if (top != null) {
+                    IrisApps.addRecent(this, top);
+                }
             }
             return formal;
         } catch (Exception e) {
