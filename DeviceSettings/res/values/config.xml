@@ -32,30 +32,11 @@
         <item>com.netflix.mediaclient</item>
         <item>com.amazon.avod.thirdpartyclient/com.amazon.avod.thirdpartyclient.ThirdPartyPlaybackActivity</item>
         <item>com.amazon.avod.thirdpartyclient/com.amazon.avod.app.PlayerActivity</item>
-        <item>in.startv.hotstar/in.startv.hotstar.rocky.watchpage.HSWatchPageActivity</item>
-        <item>in.startv.hotstaronly/in.startv.hotstar.rocky.detailpage.HSDetailPageActivity</item>
         <item>org.videolan.vlc/org.videolan.vlc.gui.video.VideoPlayerActivity</item>
         <item>dev.anilbeesetti.nextplayer/dev.anilbeesetti.nextplayer.feature.player.PlayerActivity</item>
         <item>com.mxtech.videoplayer.ad/com.mxtech.videoplayer.ad.ActivityScreen</item>
         <item>com.mxtech.videoplayer.pro/com.mxtech.videoplayer.pro.ActivityScreen</item>
-        <item>tv.danmaku.bili/tv.danmaku.bili.ui.video.VideoDetailsActivity</item>
-        <item>tv.danmaku.bili/com.bilibili.video.videodetail.VideoDetailsActivity</item>
-        <item>com.bilibili.app.in/com.bilibili.video.videodetail.VideoDetailsActivity</item>
-        <item>com.iqiyi.i18n/org.iqiyi.video.activity.PlayerActivity</item>
-        <item>com.disney.disneyplus/com.bamtechmedia.dominguez.player.ui.playback.PlaybackActivity</item>
-        <item>com.wbd.stream/com.wbd.beam.BeamActivity</item>
-        <item>tv.twitch.android.app/tv.twitch.android.feature.viewer.landing.ViewerLandingActivity</item>
-        <item>tv.twitch.android.app/tv.twitch.starshot64.app.StarshotActivity</item>
         <item>com.stremio.one/com.stremio.MainActivity</item>
-        <item>com.sonyliv/com.sonyliv.ui.home.HomeActivity</item>
-        <item>com.graymatrix.did/com.zee5.MainActivity</item>
-        <item>com.crunchyroll.crunchyroid/com.crunchyroll.watchscreen.screen.WatchScreenActivity</item>
-        <item>com.crunchyroll.crunchyroid/com.crunchyroll.watchscreen.screen.offline.OfflineWatchScreenActivity</item>
-        <item>com.crunchyroll.crunchyroid/com.crunchyroll.music.watch.screen.WatchMusicActivity</item>
-        <item>com.crunchyroll.crunchyroid/com.ellation.crunchyroll.presentation.watchpage.v2.WatchPageActivity</item>
-        <item>com.crunchyroll.crunchyroid/com.ellation.crunchyroll.presentation.watchpage.v2.OfflineWatchPageActivity</item>
-        <item>com.crunchyroll.crunchyroid/com.ellation.crunchyroll.presentation.content.WatchPageActivity</item>
-        <item>com.crunchyroll.crunchyroid/com.ellation.crunchyroll.presentation.content.OfflineWatchPageActivity</item>
         <item>com.plexapp.android/com.plexapp.player.PlayerActivity</item>
         <item>org.lineageos.glimpse/org.lineageos.glimpse.ViewActivity</item>
         <item>com.brouken.player/com.brouken.player.PlayerActivity</item>
