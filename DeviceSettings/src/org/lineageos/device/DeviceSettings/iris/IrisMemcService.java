@@ -62,8 +62,9 @@ public class IrisMemcService extends Service {
     // MEMC for Netflix: the HAL enters MEMC itself once playback has started.
     private static final int HDR_FORMAL_NETFLIX = 74;
     // MEMC policy of the Iris service (IrisMemc::setMemcEnable). By default it
-    // leaves MEMC whenever something is drawn over the video, a system bar is
-    // showing or the video is above 35 fps; 99 switches those checks off.
+    // leaves MEMC whenever something is drawn over the video or a system bar
+    // is showing; 99 switches those checks off. The frame rate limits
+    // (15, 24, 25 or 30 fps input only) are a separate test and stay.
     private static final int TYPE_MEMC_POLICY = 13;
     private static final int MEMC_POLICY_NO_CHECKS = 99;
     private static final int MEMC_POLICY_DEFAULT = 100;
