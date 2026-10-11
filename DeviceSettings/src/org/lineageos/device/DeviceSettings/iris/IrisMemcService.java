@@ -73,6 +73,9 @@ public class IrisMemcService extends Service {
     // The HDR formal type the chip was last set to, HDR_FORMAL_NONE in bypass.
     private int mFormal = HDR_FORMAL_NONE;
     private String mLastTop;
+    // The HAL repeats its callback for every frame while it enters MEMC, and
+    // again each time it re-enters; the toast is shown once per request.
+    private boolean mToastShown;
 
     // The HAL calls this when it starts MEMC on a video, which is some
     // seconds after it was asked to and only if it accepts the video.
@@ -220,15 +223,18 @@ public class IrisMemcService extends Service {
                 + (ok ? "" : " failed"));
         if (ok) {
             mFormal = formal;
+            mToastShown = false;
         }
     }
 
     /** Tells the user that MEMC has started. */
     private void showToast() {
-        if (mFormal == HDR_FORMAL_NONE || !PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean(KEY_MEMC_TOAST, true)) {
+        if (mToastShown || mFormal == HDR_FORMAL_NONE
+                || !PreferenceManager.getDefaultSharedPreferences(this)
+                        .getBoolean(KEY_MEMC_TOAST, true)) {
             return;
         }
+        mToastShown = true;
         getMainExecutor().execute(() ->
                 Toast.makeText(this, R.string.iris_memc_started, Toast.LENGTH_SHORT).show());
     }
