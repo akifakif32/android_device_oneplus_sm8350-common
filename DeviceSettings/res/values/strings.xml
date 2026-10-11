@@ -26,6 +26,8 @@
     <string name="iris_memc_toast_title">Show when motion smoothing starts</string>
     <string name="iris_memc_toast_summary">Show a short message when the display starts adding frames to a video</string>
     <string name="iris_memc_started">Motion smoothing started</string>
+    <string name="iris_memc_no_checks_title">Keep smoothing under overlays</string>
+    <string name="iris_memc_no_checks_summary">Keep adding frames while player controls, subtitles or the status bar are on screen, and for video above 35 fps. They may smear while moving. Applies from the next video</string>
 
     <!-- Video enhancement (OPLUS decoder filter) -->
     <string name="video_title">Video enhancement</string>

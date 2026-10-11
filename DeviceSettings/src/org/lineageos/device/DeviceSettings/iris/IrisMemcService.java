@@ -47,6 +47,7 @@ public class IrisMemcService extends Service {
 
     public static final String KEY_MEMC = "iris_memc";
     private static final String KEY_MEMC_TOAST = "iris_memc_toast";
+    private static final String KEY_MEMC_NO_CHECKS = "iris_memc_no_checks";
 
     // Identifies this client to the HAL, same value as the Nameless client.
     private static final long CALLBACK_ID = -2138930830L;
@@ -60,6 +61,12 @@ public class IrisMemcService extends Service {
     private static final int HDR_FORMAL_MEMC = 10;
     // MEMC for Netflix: the HAL enters MEMC itself once playback has started.
     private static final int HDR_FORMAL_NETFLIX = 74;
+    // MEMC policy of the Iris service (IrisMemc::setMemcEnable). By default it
+    // leaves MEMC whenever something is drawn over the video, a system bar is
+    // showing or the video is above 35 fps; 99 switches those checks off.
+    private static final int TYPE_MEMC_POLICY = 13;
+    private static final int MEMC_POLICY_NO_CHECKS = 99;
+    private static final int MEMC_POLICY_DEFAULT = 100;
 
     private static final String PACKAGE_NETFLIX = "com.netflix.mediaclient";
 
@@ -214,8 +221,13 @@ public class IrisMemcService extends Service {
             if (!ok) {
                 // Do not leave the chip out of bypass with no mode selected.
                 configure(TYPE_ANALOG_BYPASS, 1);
+            } else if (PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(KEY_MEMC_NO_CHECKS, true)) {
+                configure(TYPE_MEMC_POLICY, MEMC_POLICY_NO_CHECKS);
             }
         } else {
+            // A policy value also enables MEMC, so restore it before the off.
+            configure(TYPE_MEMC_POLICY, MEMC_POLICY_DEFAULT);
             ok = configure(TYPE_HDR_FORMAL, HDR_FORMAL_NONE)
                     && configure(TYPE_ANALOG_BYPASS, 1);
         }

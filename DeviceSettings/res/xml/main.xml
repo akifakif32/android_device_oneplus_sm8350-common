@@ -36,6 +36,13 @@
             android:dependency="iris_memc"
             android:summary="@string/iris_memc_toast_summary"
             android:title="@string/iris_memc_toast_title" />
+
+        <SwitchPreferenceCompat
+            android:key="iris_memc_no_checks"
+            android:defaultValue="true"
+            android:dependency="iris_memc"
+            android:summary="@string/iris_memc_no_checks_summary"
+            android:title="@string/iris_memc_no_checks_title" />
     </PreferenceCategory>
 
     <PreferenceCategory
