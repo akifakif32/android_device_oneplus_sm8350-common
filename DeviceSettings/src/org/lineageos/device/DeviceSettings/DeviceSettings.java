@@ -132,6 +132,11 @@ public class DeviceSettings extends SettingsBasePreferenceFragment
     public void onResume() {
         super.onResume();
         enforceTouchPanelPolicy();
+        // The quick settings tile may have changed it while we were away.
+        SwitchPreferenceCompat memc = findPreference(IrisMemcService.KEY_MEMC);
+        if (memc != null) {
+            memc.setChecked(IrisMemcService.isEnabled(getContext()));
+        }
         if (getActivity() != null) {
             getActivity().setTitle(R.string.device_title);
         }

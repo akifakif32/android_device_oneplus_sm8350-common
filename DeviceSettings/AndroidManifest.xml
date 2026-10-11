@@ -107,6 +107,21 @@
             android:name=".iris.IrisMemcService"
             android:exported="false" />
 
+        <service
+            android:name=".iris.IrisMemcTileService"
+            android:enabled="@bool/config_irisMemcSupported"
+            android:exported="true"
+            android:icon="@drawable/ic_memc"
+            android:label="@string/iris_memc_title"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+        </service>
+
         <!-- Selective Band Lock sub-screen -->
         <activity
             android:name=".network.NetworkBandsActivity"
