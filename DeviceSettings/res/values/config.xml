@@ -28,8 +28,10 @@
         <item>com.google.android.youtube/com.google.android.apps.youtube.app.WatchWhileActivity</item>
         <item>com.google.android.youtube/com.google.android.apps.youtube.app.watchwhile.WatchWhileActivity</item>
         <item>com.google.android.youtube/com.google.android.apps.youtube.app.watchwhile.MainActivity</item>
+        <item>com.google.android.youtube/com.google.android.youtube.app.honeycomb.Shell$HomeActivity</item>
         <item>com.netflix.mediaclient</item>
         <item>com.amazon.avod.thirdpartyclient/com.amazon.avod.thirdpartyclient.ThirdPartyPlaybackActivity</item>
+        <item>com.amazon.avod.thirdpartyclient/com.amazon.avod.app.PlayerActivity</item>
         <item>in.startv.hotstar/in.startv.hotstar.rocky.watchpage.HSWatchPageActivity</item>
         <item>in.startv.hotstaronly/in.startv.hotstar.rocky.detailpage.HSDetailPageActivity</item>
         <item>org.videolan.vlc/org.videolan.vlc.gui.video.VideoPlayerActivity</item>
