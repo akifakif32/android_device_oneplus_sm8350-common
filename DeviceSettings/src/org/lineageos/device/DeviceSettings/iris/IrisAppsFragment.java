@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.ArrayMap;
 
 import androidx.preference.CheckBoxPreference;
@@ -81,14 +82,26 @@ public class IrisAppsFragment extends SettingsBasePreferenceFragment {
         if (entries.contains(packageName)) {
             return getString(R.string.iris_memc_whole_app);
         }
-        int screens = 0;
+        List<String> names = new ArrayList<>();
+        for (String className : selected(entries, packageName)) {
+            names.add(shortName(className));
+        }
+        return names.isEmpty() ? null : TextUtils.join(", ", names);
+    }
+
+    /** The saved activities of a package, sorted. */
+    private static Set<String> selected(Set<String> entries, String packageName) {
+        Set<String> classes = new TreeSet<>();
         for (String entry : entries) {
             if (entry.startsWith(packageName + "/")) {
-                screens++;
+                classes.add(entry.substring(packageName.length() + 1));
             }
         }
-        return screens == 0 ? null : getResources().getQuantityString(
-                R.plurals.iris_memc_screens, screens, screens);
+        return classes;
+    }
+
+    private static String shortName(String className) {
+        return className.substring(className.lastIndexOf('.') + 1);
     }
 
     // ponytail: labels and icons are loaded on the main thread, about a
@@ -143,14 +156,12 @@ public class IrisAppsFragment extends SettingsBasePreferenceFragment {
         } catch (PackageManager.NameNotFoundException e) {
             mTitle = mPackage;
         }
-        // Saved screens the app no longer declares stay listed so they can
-        // be removed.
-        for (String entry : entries) {
-            if (entry.startsWith(mPackage + "/")) {
-                all.add(entry.substring(mPackage.length() + 1));
-            }
-        }
+        // What is saved comes first, including screens the app no longer
+        // declares, so it can be reviewed and removed in one place.
+        Set<String> selected = selected(entries, mPackage);
         List<String> recent = IrisApps.getRecent(context, mPackage);
+        recent.removeAll(selected);
+        all.removeAll(selected);
         all.removeAll(recent);
 
         SwitchPreferenceCompat whole = new SwitchPreferenceCompat(context);
@@ -166,6 +177,15 @@ public class IrisAppsFragment extends SettingsBasePreferenceFragment {
             return true;
         });
         screen.addPreference(whole);
+
+        if (!selected.isEmpty()) {
+            PreferenceCategory selectedGroup = new PreferenceCategory(context);
+            selectedGroup.setTitle(R.string.iris_memc_selected_screens);
+            screen.addPreference(selectedGroup);
+            for (String name : selected) {
+                addScreen(context, selectedGroup, entries, name);
+            }
+        }
 
         PreferenceCategory recentGroup = new PreferenceCategory(context);
         recentGroup.setTitle(R.string.iris_memc_recent_screens);
@@ -193,7 +213,7 @@ public class IrisAppsFragment extends SettingsBasePreferenceFragment {
         String entry = mPackage + "/" + className;
         CheckBoxPreference pref = new CheckBoxPreference(context);
         pref.setPersistent(false);
-        pref.setTitle(className.substring(className.lastIndexOf('.') + 1));
+        pref.setTitle(shortName(className));
         pref.setSummary(className);
         pref.setChecked(entries.contains(entry));
         pref.setOnPreferenceChangeListener((p, value) -> {
