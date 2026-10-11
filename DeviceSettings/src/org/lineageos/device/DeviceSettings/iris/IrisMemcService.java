@@ -46,8 +46,6 @@ public class IrisMemcService extends Service {
     private static final String TAG = "IrisMemcService";
 
     public static final String KEY_MEMC = "iris_memc";
-    private static final String KEY_MEMC_TOAST = "iris_memc_toast";
-    private static final String KEY_MEMC_NO_CHECKS = "iris_memc_no_checks";
 
     // Identifies this client to the HAL, same value as the Nameless client.
     private static final long CALLBACK_ID = -2138930830L;
@@ -222,8 +220,7 @@ public class IrisMemcService extends Service {
             if (!ok) {
                 // Do not leave the chip out of bypass with no mode selected.
                 configure(TYPE_ANALOG_BYPASS, 1);
-            } else if (PreferenceManager.getDefaultSharedPreferences(this)
-                    .getBoolean(KEY_MEMC_NO_CHECKS, true)) {
+            } else {
                 configure(TYPE_MEMC_POLICY, MEMC_POLICY_NO_CHECKS);
             }
         } else {
@@ -242,9 +239,7 @@ public class IrisMemcService extends Service {
 
     /** Tells the user that MEMC has started. */
     private void showToast() {
-        if (mToastShown || mFormal == HDR_FORMAL_NONE
-                || !PreferenceManager.getDefaultSharedPreferences(this)
-                        .getBoolean(KEY_MEMC_TOAST, true)) {
+        if (mToastShown || mFormal == HDR_FORMAL_NONE) {
             return;
         }
         mToastShown = true;
