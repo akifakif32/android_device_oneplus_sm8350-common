@@ -21,37 +21,47 @@
          IrisMemcService run. -->
     <bool name="config_irisMemcSupported">false</bool>
 
-    <!-- Video apps (package names) MEMC is requested for while one of their
-         activities is on top. The chip starts MEMC itself once a video is
-         playing. An item may also be package/class to match one activity. -->
+    <!-- Video player activities (package/class) MEMC is switched on for while
+         they are on top. Only the class name is compared. An item without a
+         class is a package and matches all of its activities. -->
     <string-array name="iris_memc_activities" translatable="false">
-        <item>com.google.android.youtube</item>
+        <item>com.google.android.youtube/com.google.android.apps.youtube.app.WatchWhileActivity</item>
+        <item>com.google.android.youtube/com.google.android.apps.youtube.app.watchwhile.WatchWhileActivity</item>
+        <item>com.google.android.youtube/com.google.android.apps.youtube.app.watchwhile.MainActivity</item>
+        <item>com.google.android.youtube/com.google.android.youtube.app.honeycomb.Shell$HomeActivity</item>
         <item>com.netflix.mediaclient</item>
-        <item>com.amazon.avod.thirdpartyclient</item>
-        <item>in.startv.hotstar</item>
-        <item>in.startv.hotstaronly</item>
-        <item>org.videolan.vlc</item>
-        <item>dev.anilbeesetti.nextplayer</item>
-        <item>com.mxtech.videoplayer.ad</item>
-        <item>com.mxtech.videoplayer.pro</item>
-        <item>tv.danmaku.bili</item>
-        <item>com.bilibili.app.in</item>
-        <item>com.iqiyi.i18n</item>
-        <item>com.disney.disneyplus</item>
-        <item>com.wbd.stream</item>
-        <item>tv.twitch.android.app</item>
-        <item>com.stremio.one</item>
-        <item>com.sonyliv</item>
-        <item>com.graymatrix.did</item>
-        <item>com.crunchyroll.crunchyroid</item>
-        <item>com.plexapp.android</item>
-        <item>org.lineageos.glimpse</item>
-        <item>com.brouken.player</item>
-        <item>dev.jdtech.jellyfin</item>
-        <item>org.jellyfin.mobile</item>
-        <item>org.schabi.newpipe</item>
-        <item>app.revanced.android.youtube</item>
-        <item>is.xyz.mpv</item>
+        <item>com.amazon.avod.thirdpartyclient/com.amazon.avod.thirdpartyclient.ThirdPartyPlaybackActivity</item>
+        <item>com.amazon.avod.thirdpartyclient/com.amazon.avod.app.PlayerActivity</item>
+        <item>in.startv.hotstar/in.startv.hotstar.rocky.watchpage.HSWatchPageActivity</item>
+        <item>in.startv.hotstaronly/in.startv.hotstar.rocky.detailpage.HSDetailPageActivity</item>
+        <item>org.videolan.vlc/org.videolan.vlc.gui.video.VideoPlayerActivity</item>
+        <item>dev.anilbeesetti.nextplayer/dev.anilbeesetti.nextplayer.feature.player.PlayerActivity</item>
+        <item>com.mxtech.videoplayer.ad/com.mxtech.videoplayer.ad.ActivityScreen</item>
+        <item>com.mxtech.videoplayer.pro/com.mxtech.videoplayer.pro.ActivityScreen</item>
+        <item>tv.danmaku.bili/tv.danmaku.bili.ui.video.VideoDetailsActivity</item>
+        <item>tv.danmaku.bili/com.bilibili.video.videodetail.VideoDetailsActivity</item>
+        <item>com.bilibili.app.in/com.bilibili.video.videodetail.VideoDetailsActivity</item>
+        <item>com.iqiyi.i18n/org.iqiyi.video.activity.PlayerActivity</item>
+        <item>com.disney.disneyplus/com.bamtechmedia.dominguez.player.ui.playback.PlaybackActivity</item>
+        <item>com.wbd.stream/com.wbd.beam.BeamActivity</item>
+        <item>tv.twitch.android.app/tv.twitch.android.feature.viewer.landing.ViewerLandingActivity</item>
+        <item>tv.twitch.android.app/tv.twitch.starshot64.app.StarshotActivity</item>
+        <item>com.stremio.one/com.stremio.MainActivity</item>
+        <item>com.sonyliv/com.sonyliv.ui.home.HomeActivity</item>
+        <item>com.graymatrix.did/com.zee5.MainActivity</item>
+        <item>com.crunchyroll.crunchyroid/com.crunchyroll.watchscreen.screen.WatchScreenActivity</item>
+        <item>com.crunchyroll.crunchyroid/com.crunchyroll.watchscreen.screen.offline.OfflineWatchScreenActivity</item>
+        <item>com.crunchyroll.crunchyroid/com.crunchyroll.music.watch.screen.WatchMusicActivity</item>
+        <item>com.crunchyroll.crunchyroid/com.ellation.crunchyroll.presentation.watchpage.v2.WatchPageActivity</item>
+        <item>com.crunchyroll.crunchyroid/com.ellation.crunchyroll.presentation.watchpage.v2.OfflineWatchPageActivity</item>
+        <item>com.crunchyroll.crunchyroid/com.ellation.crunchyroll.presentation.content.WatchPageActivity</item>
+        <item>com.crunchyroll.crunchyroid/com.ellation.crunchyroll.presentation.content.OfflineWatchPageActivity</item>
+        <item>com.plexapp.android/com.plexapp.player.PlayerActivity</item>
+        <item>org.lineageos.glimpse/org.lineageos.glimpse.ViewActivity</item>
+        <item>com.brouken.player/com.brouken.player.PlayerActivity</item>
+        <item>dev.jdtech.jellyfin/dev.jdtech.jellyfin.PlayerActivity</item>
+        <item>org.jellyfin.mobile/org.jellyfin.mobile.MainActivity</item>
+        <item>org.schabi.newpipe/org.schabi.newpipe.MainActivity</item>
     </string-array>
 
 </resources>
