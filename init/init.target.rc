@@ -54,6 +54,10 @@ on init
     chown system system /dev/cpuctl/background/tasks
     chown system system /dev/cpuctl/top-app/tasks
     chown system system /dev/cpuctl/rt/tasks
+    chown system system /dev/cpuctl/foreground/cpu.uclamp.min
+    chown system system /dev/cpuctl/top-app/cpu.uclamp.min
+    chmod 0664 /dev/cpuctl/foreground/cpu.uclamp.min
+    chmod 0664 /dev/cpuctl/top-app/cpu.uclamp.min
     chmod 0664 /dev/cpuctl/tasks
     chmod 0664 /dev/cpuctl/foreground/tasks
     chmod 0664 /dev/cpuctl/background/tasks
