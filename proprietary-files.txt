@@ -565,13 +565,15 @@ vendor/etc/media_yupik_v1/video_system_specs.json
 vendor/etc/vintf/manifest/c2_manifest_vendor.xml
 vendor/etc/video_system_specs.json
 vendor/lib64/libqc2vppfilter.so
-vendor/lib64/libqcodec2_base.so
-vendor/lib64/libqcodec2_basecodec.so
-vendor/lib64/libqcodec2_core.so
-vendor/lib64/libqcodec2_hooks.so
-vendor/lib64/libqcodec2_platform.so
-vendor/lib64/libqcodec2_utils.so
-vendor/lib64/libqcodec2_v4l2codec.so
+
+# Media (Codec2) - from Nothing Phone (1) (Spacewar-U3.2-260416-1140)
+vendor/lib64/libqcodec2_base.so|1501bb8c174c102fef35233254bc1a4fadb414b8
+vendor/lib64/libqcodec2_basecodec.so|19689c20e91ac0ff502f4a308eed1f8ca4921be2
+vendor/lib64/libqcodec2_core.so|57bfcede78e1b159e2448c9c03099c34bda4f98e
+vendor/lib64/libqcodec2_hooks.so|4751cfa1d1fceb15717ae758647eacfa1bdea586
+vendor/lib64/libqcodec2_platform.so|aef712ee185840f3e000abc392b25821b0532fcd
+vendor/lib64/libqcodec2_utils.so|171595a70b902ac178a44269b44dba71287f75c6
+vendor/lib64/libqcodec2_v4l2codec.so|abbb6d368faad781ce2d12a97830152438153a88
 
 # Media - from OnePlus 11 (CPH2449_16.0.5.1301(EX01))
 vendor/lib64/libmmosal_vendor.so|39661d66dea51877597089df126671f1f38f543b
