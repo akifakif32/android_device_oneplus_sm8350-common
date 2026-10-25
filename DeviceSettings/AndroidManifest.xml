@@ -34,6 +34,13 @@
          LocationManager provider check need ACCESS_FINE_LOCATION /
          ACCESS_COARSE_LOCATION. -->
     <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_ROUTING" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_PRECISE_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -148,6 +155,42 @@
             android:theme="@style/Theme.DeviceSettings"
             android:enableOnBackInvokedCallback="true"
             android:exported="false" />
+
+
+        <!-- Dual A2DP audio sharing -->
+        <activity
+            android:name=".audioshare.AudioShareActivity"
+            android:label="@string/audio_share_title"
+            android:theme="@style/Theme.DeviceSettings"
+            android:enableOnBackInvokedCallback="true"
+            android:permission="android.permission.BLUETOOTH_PRIVILEGED"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.lineageos.device.DeviceSettings.AUDIO_SHARE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".audioshare.SeparateAppSoundActivity"
+            android:label="@string/separate_app_sound_title"
+            android:theme="@style/Theme.DeviceSettings"
+            android:enableOnBackInvokedCallback="true"
+            android:exported="false" />
+
+        <service
+            android:name=".audioshare.AudioShareTileService"
+            android:label="@string/audio_share_tile_label"
+            android:icon="@drawable/ic_audio_share"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+        </service>
 
     </application>
 </manifest>

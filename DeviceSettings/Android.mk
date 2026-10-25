@@ -43,6 +43,9 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     vendor.oplus.hardware.radio-V2-java \
     vendor.pixelworks.hardware.display-V1.0-java
 
+LOCAL_JAVA_LIBRARIES := \
+    oplus-fwk
+
 LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res
 

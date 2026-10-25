@@ -67,6 +67,7 @@ public final class Startup extends BroadcastReceiver {
                 org.lineageos.device.DeviceSettings.iris.IrisMemcService.sync(context);
                 org.lineageos.device.DeviceSettings.network.NetworkBandsFragment.restoreNrModeSettings(context);
                 initMaterialEffectSettings(context);
+                org.lineageos.device.DeviceSettings.audioshare.SeparateAppSoundManager.getInstance(context).updateRouting();
             } catch (Exception e) {
                 Log.e(TAG, "Failed to restore hardware settings during startup", e);
             } finally {

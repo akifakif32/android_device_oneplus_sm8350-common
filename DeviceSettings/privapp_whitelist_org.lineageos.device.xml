@@ -9,6 +9,9 @@
              ACCESS_COARSE_LOCATION are dangerous-level, not privileged, so
              they don't belong in this whitelist. -->
         <permission name="android.permission.MODIFY_PHONE_STATE" />
+        <permission name="android.permission.BLUETOOTH_PRIVILEGED" />
+        <permission name="android.permission.MODIFY_AUDIO_ROUTING" />
+        <permission name="android.permission.MODIFY_AUDIO_SETTINGS" />
         <permission name="android.permission.READ_PHONE_STATE" />
         <permission name="android.permission.READ_PRECISE_PHONE_STATE" />
     </privapp-permissions>

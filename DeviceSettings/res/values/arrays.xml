@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-FileCopyrightText: 2026 The AxionOS Project; SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string-array name="separate_app_sound_device_entries">
+        <item>@string/separate_app_sound_device_speaker</item>
+        <item>@string/separate_app_sound_device_bt</item>
+    </string-array>
+    <string-array name="separate_app_sound_device_values" translatable="false">
+        <item>speaker</item>
+        <item>bluetooth</item>
+    </string-array>
+</resources>
