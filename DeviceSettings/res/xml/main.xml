@@ -97,6 +97,18 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="calls"
+        android:title="@string/calls_title">
+
+        <SwitchPreferenceCompat
+            android:key="pickup_reduce_ring"
+            android:icon="@drawable/ic_ring_volume"
+            android:summary="@string/pickup_reduce_ring_summary"
+            android:title="@string/pickup_reduce_ring_title"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="vibrator"
         android:title="@string/category_vibrator">
 

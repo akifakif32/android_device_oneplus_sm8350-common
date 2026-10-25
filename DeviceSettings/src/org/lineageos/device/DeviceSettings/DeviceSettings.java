@@ -86,6 +86,10 @@ public class DeviceSettings extends SettingsBasePreferenceFragment
             });
         }
         
+        if (!RingPickupService.isSupported(getContext())) {
+            getPreferenceScreen().removePreference(findPreference("calls"));
+        }
+
         Preference.OnPreferenceChangeListener videoListener = (pref, value) -> {
             // The new value is stored after this returns.
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());

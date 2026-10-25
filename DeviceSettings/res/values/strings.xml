@@ -43,6 +43,9 @@
 
     <!-- Vibration control -->
     <string name="category_vibrator">Vibrator</string>
+    <string name="calls_title">Calls</string>
+    <string name="pickup_reduce_ring_title">Raise to reduce ringtone volume</string>
+    <string name="pickup_reduce_ring_summary">Lower the ringtone when you pick up the phone during an incoming call</string>
     <string name="vib_strength_title_head">Strength</string>
     <string name="vib_strength_summary_head">Define the strength of the vibrator</string>
 
