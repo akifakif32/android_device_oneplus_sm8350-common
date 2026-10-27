@@ -2633,6 +2633,37 @@ public class NetworkBandsFragment extends Fragment {
 
     @android.annotation.SuppressLint("MissingPermission")
     private void applyBandsNow() {
+        applyBandsNow(false);
+    }
+
+    /** True if any checked band can carry voice (2G/3G CS, or LTE for VoLTE). */
+    private boolean hasVoiceCapablePath() {
+        for (BandEntry e : mBandEntries) {
+            if (e.isHeader || !e.checked) continue;
+            if (e.rat == AccessNetworkConstants.AccessNetworkType.GERAN
+                    || e.rat == AccessNetworkConstants.AccessNetworkType.UTRAN
+                    || e.rat == AccessNetworkConstants.AccessNetworkType.EUTRAN) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void applyBandsNow(boolean voiceWarningConfirmed) {
+        // A lock with only 5G NR bands leaves no CS (2G/3G) or VoLTE (LTE) path;
+        // unless the carrier runs VoNR, calls and SMS break. Warn before applying.
+        if (!voiceWarningConfirmed && countChecked() > 0 && !hasVoiceCapablePath()) {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("No voice-capable band selected")
+                    .setMessage("Only 5G NR bands are locked. No 2G/3G/LTE band is left for "
+                            + "voice, so calls and SMS may fail unless your carrier supports VoNR. "
+                            + "Apply anyway?")
+                    .setPositiveButton("Apply anyway", (d, w) -> applyBandsNow(true))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+            return;
+        }
+
         Set<String> newSavedKeys = new HashSet<>();
         for (BandEntry e : mBandEntries) {
             if (e.checked && !e.isHeader) {
