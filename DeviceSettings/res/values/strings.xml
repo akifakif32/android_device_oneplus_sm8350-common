@@ -227,6 +227,7 @@
     <string name="audio_share_tile_label">Audio Sharing</string>
     <string name="audio_share_tile_streaming_to">Streaming to %1$s &amp; %2$s</string>
     <string name="audio_share_title">Audio Sharing</string>
+    <string name="audio_share_summary">Stream to two Bluetooth headsets at once</string>
     <string name="bluetooth_a2dp_hw_offload_already_hw">Already using Hardware Offload</string>
     <string name="bluetooth_a2dp_hw_offload_already_sw">Already using Software Encoding</string>
     <string name="bluetooth_a2dp_hw_offload_summary_off">Fluoride software encoding active (dual audio sharing ready, low latency)</string>
