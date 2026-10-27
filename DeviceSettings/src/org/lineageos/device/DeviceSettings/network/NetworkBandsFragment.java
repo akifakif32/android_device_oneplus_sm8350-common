@@ -74,6 +74,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 /**
  * Fragment to handle selective band locking, custom RAT slots (2G, 3G, 4G, 5G),
@@ -2676,22 +2677,30 @@ public class NetworkBandsFragment extends Fragment {
 
         try {
             TelephonyManager tm = getTelephonyManager();
-            tm.setSystemSelectionChannels(specifiers);
-            setStatus(getString(R.string.network_bands_status_active, countChecked()));
-
-            toast("Band Lock applied — cycling radio power...");
-
-            tm.setRadioPower(false);
-            mHandler.postDelayed(() -> {
-                try {
-                    tm.setRadioPower(true);
-                    toast("Modem online — re-scanning physical channels...");
-                    mHandler.postDelayed(this::updateActiveBands, 4000);
-                    mHandler.postDelayed(() -> updateLiveDiagnostics(null), 4000);
-                } catch (Exception e) {
-                    Log.e(TAG, "Failed to power on radio: " + e.getMessage());
+            final int locked = countChecked();
+            // Callback overload reports whether the modem actually accepted the
+            // selection, instead of assuming success like the void form.
+            tm.setSystemSelectionChannels(specifiers, requireContext().getMainExecutor(),
+                    (Consumer<Boolean>) (success) -> {
+                if (!Boolean.TRUE.equals(success)) {
+                    Log.e(TAG, "Modem rejected setSystemSelectionChannels for subId=" + mCurrentSubId);
+                    toast("Modem rejected the band lock — no bands were changed");
+                    return;
                 }
-            }, 1200);
+                setStatus(getString(R.string.network_bands_status_active, locked));
+                toast("Band Lock applied — cycling radio power...");
+                tm.setRadioPower(false);
+                mHandler.postDelayed(() -> {
+                    try {
+                        tm.setRadioPower(true);
+                        toast("Modem online — re-scanning physical channels...");
+                        mHandler.postDelayed(this::updateActiveBands, 4000);
+                        mHandler.postDelayed(() -> updateLiveDiagnostics(null), 4000);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to power on radio: " + e.getMessage());
+                    }
+                }, 1200);
+            });
 
             filterBandsByGeneration();
             checkApplyButtonState();
