@@ -47,6 +47,11 @@ lib_fixups: lib_fixups_user_type = {
 blob_fixups: blob_fixups_user_type = {
     'odm/bin/hw/vendor.pixelworks.hardware.display.iris-service': blob_fixup()
         .add_needed('libprocessgroup.so'),
+    'odm/lib64/libpwirisservice.so': blob_fixup()
+        .sig_replace('48 06 08 37 08 17 91 52', '48 06 08 37 08 C9 9D 52')
+        .sig_replace('07 00 00 14 08 35 8C 52 7F 02 08 6B A0 00 00 54 08 A6 8E 52 7F 02 08 6B 40 00 00 54', '07 00 00 14 08 F9 95 52 7F 02 08 6B A1 00 00 54 1F 20 03 D5 1F 20 03 D5 1F 20 03 D5')
+        .sig_replace('08 0C 41 B9 09 17 91 52', '08 0C 41 B9 09 C9 9D 52')
+        .sig_replace('9B BB A3 72 3A 17 91 52', '9B BB A3 72 3A C9 9D 52'),
     ('odm/lib64/mediadrm/libwvdrmengine.so', 'odm/lib64/libwvhidl.so'): blob_fixup()
         .add_needed('libcrypto_shim.so'),
     'product/app/PowerOffAlarm/PowerOffAlarm.apk': blob_fixup()
