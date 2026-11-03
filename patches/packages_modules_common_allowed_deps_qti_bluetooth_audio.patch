@@ -1,0 +1,11 @@
+--- a/build/allowed_deps.txt
++++ b/build/allowed_deps.txt
+@@ -1711,6 +1711,8 @@
+ uprobestats_mainline_flags_c_lib(minSdkVersion:36)
+ uprobestats_rs(minSdkVersion:36)
+ uwb_androidx_backend(minSdkVersion:30)
++vendor.qti.hardware.bluetooth_audio@2.0(minSdkVersion:29)
++vendor.qti.hardware.bluetooth_audio@2.1(minSdkVersion:29)
+ volumegroupcallback-aidl-cpp(minSdkVersion:29)
+ wear-permission-components(minSdkVersion:30)
+ wifi-lite-protos(minSdkVersion:30)

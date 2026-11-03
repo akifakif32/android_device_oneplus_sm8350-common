@@ -46,3 +46,4 @@ apply_patch "vendor/qcom/opensource/interfaces" "../../../../$PATCH_DIR/vendor_q
 # Earlier revisions of this patch left the Android.bp files in a different state: start from HEAD
 [ -d vendor/qcom/opensource/interfaces ] && git -C vendor/qcom/opensource/interfaces checkout -q -- bluetooth_audio/2.0/Android.bp bluetooth_audio/2.1/Android.bp
 apply_patch "vendor/qcom/opensource/interfaces" "../../../../$PATCH_DIR/vendor_qcom_opensource_interfaces_bluetooth_audio_apex_bt.patch" "bluetooth_audio@2.0/2.1: make the HIDL libs available to com.android.bt instead of com.android.btservices (the pre-Android 16 Bluetooth APEX name, no longer a module), so the Bluetooth module's A2DP offload client can link them"
+apply_patch "packages/modules/common" "../../../$PATCH_DIR/packages_modules_common_allowed_deps_qti_bluetooth_audio.patch" "allowed_deps.txt: allow vendor.qti.hardware.bluetooth_audio@2.0/2.1 in updatable APEXes, linked by the Bluetooth module A2DP offload client"
