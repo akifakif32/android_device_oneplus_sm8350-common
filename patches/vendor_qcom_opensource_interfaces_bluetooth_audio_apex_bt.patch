@@ -1,19 +1,21 @@
 --- a/bluetooth_audio/2.0/Android.bp
 +++ b/bluetooth_audio/2.0/Android.bp
-@@ -16,6 +16,7 @@
+@@ -15,7 +15,7 @@
+     ],
      apex_available: [
          "//apex_available:platform",
-          "com.android.btservices",
+-         "com.android.btservices",
 +        "com.android.bt",
      ],
      gen_java: false,
  }
 --- a/bluetooth_audio/2.1/Android.bp
 +++ b/bluetooth_audio/2.1/Android.bp
-@@ -17,6 +17,7 @@
+@@ -16,7 +16,7 @@
+     ],
      apex_available: [
          "//apex_available:platform",
-          "com.android.btservices",
+-         "com.android.btservices",
 +        "com.android.bt",
      ],
      gen_java: false,
