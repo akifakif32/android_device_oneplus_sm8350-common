@@ -807,6 +807,11 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
             try {
                 BluetoothAdapter bt = BluetoothAdapter.getDefaultAdapter();
                 if (bt != null && bt.isEnabled()) {
+                    // Android reconnects only the last active headset after a restart
+                    List<BluetoothDevice> wereConnected = new ArrayList<>();
+                    if (mBluetoothA2dp instanceof BluetoothA2dp) {
+                        wereConnected.addAll(((BluetoothA2dp) mBluetoothA2dp).getConnectedDevices());
+                    }
                     bt.disable();
                     // enable() sent while the adapter is still turning off can be dropped,
                     // so turn it back on only once it is fully off, and retry once
@@ -816,6 +821,14 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
                         Log.w(TAG, "Bluetooth not back on after the offload switch, enabling again");
                         bt.enable();
                         waitForAdapterState(bt, BluetoothAdapter.STATE_ON);
+                    }
+                    // After Android's own reconnect, connect the rest of them
+                    Thread.sleep(5000);
+                    for (BluetoothDevice device : wereConnected) {
+                        if (!device.isConnected()) {
+                            Log.i(TAG, "Reconnecting " + device + " after the offload switch");
+                            device.connect();
+                        }
                     }
                 }
             } catch (Throwable t) {
