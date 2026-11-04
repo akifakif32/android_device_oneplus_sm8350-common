@@ -65,6 +65,14 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
     private static final String PROP_SHARING_CODEC = "persist.bluetooth.a2dp_sharing.codec";
     // Set when turning sharing on switched hardware offload off, so turning it off restores it
     private static final String PREF_OFFLOAD_OFF_FOR_SHARING = "offload_off_for_sharing";
+    // Test: share with A2DP offload kept on (the stack sends the offload start for both links)
+    private static final String PROP_OFFLOAD_PROBE = "persist.bluetooth.a2dp_sharing.offload_probe";
+
+    // Sharing runs on software encoding, unless the offload probe is on
+    private static boolean sharingPathReady() {
+        return android.os.SystemProperties.getBoolean("persist.bluetooth.a2dp_offload.disabled", false)
+                || android.os.SystemProperties.getBoolean(PROP_OFFLOAD_PROBE, false);
+    }
 
     private static final java.util.concurrent.ExecutorService sOffloadExecutor =
             java.util.concurrent.Executors.newSingleThreadExecutor();
@@ -343,8 +351,7 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
         if (getContext() != null) {
             boolean shouldBeChecked = mIsSharingActive
                     || (mSharingManager != null && mSharingManager.isA2dpSharingEnabled());
-            boolean offloadDisabled = android.os.SystemProperties.getBoolean("persist.bluetooth.a2dp_offload.disabled", false);
-            if (!offloadDisabled) {
+            if (!sharingPathReady()) {
                 shouldBeChecked = false;
             }
             if (mMasterSwitch != null && mMasterSwitch.isChecked() != shouldBeChecked) {
@@ -544,7 +551,6 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
             return;
         }
 
-        boolean offloadDisabled = android.os.SystemProperties.getBoolean("persist.bluetooth.a2dp_offload.disabled", false);
         boolean btOk = mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
         boolean masterEnabled = mMasterSwitch != null && mMasterSwitch.isChecked();
 
@@ -557,14 +563,14 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
         if (mMasterSwitch != null) {
             mMasterSwitch.setEnabled(btOk && !mIsOffloadSwitching);
             // If hardware offload is enabled, force SBC cannot remain active
-            if (!offloadDisabled && !mIsOffloadSwitching && mMasterSwitch.isChecked()) {
+            if (!sharingPathReady() && !mIsOffloadSwitching && mMasterSwitch.isChecked()) {
                 mMasterSwitch.setChecked(false);
                 masterEnabled = false;
             }
         }
 
         // Audio sharing capabilities require: offload disabled AND master switch checked AND Bluetooth ready
-        boolean sharingReady = offloadDisabled && masterEnabled && btOk;
+        boolean sharingReady = sharingPathReady() && masterEnabled && btOk;
 
         if (mPrimaryDeviceInfo != null) {
             mPrimaryDeviceInfo.setEnabled(sharingReady);
@@ -657,7 +663,7 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
                 mSharingManager.setA2dpSharingEnabled(enabled);
             }
             // Sharing copies software-encoded packets, so it runs with hardware offload off
-            if (enabled && !offloadDisabled) {
+            if (enabled && !sharingPathReady()) {
                 prefs.edit().putBoolean(PREF_OFFLOAD_OFF_FOR_SHARING, true).apply();
                 switchHardwareOffload(false);
             } else if (!enabled && prefs.getBoolean(PREF_OFFLOAD_OFF_FOR_SHARING, false)) {
@@ -851,8 +857,7 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
                 updateUiState();
                 Toast.makeText(getContext(), "Audio sharing stopped", Toast.LENGTH_SHORT).show();
             } else {
-                boolean offloadDisabled = android.os.SystemProperties.getBoolean("persist.bluetooth.a2dp_offload.disabled", false);
-                if (!offloadDisabled) {
+                if (!sharingPathReady()) {
                     Toast.makeText(getContext(), R.string.audio_share_hw_offload_must_be_disabled, Toast.LENGTH_LONG).show();
                     return true;
                 }
@@ -906,8 +911,7 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
             showSelectPrimaryDeviceDialog();
             return true;
         } else if (preference == mSwapRolesPref) {
-            boolean offloadDisabled = android.os.SystemProperties.getBoolean("persist.bluetooth.a2dp_offload.disabled", false);
-            if (!offloadDisabled) {
+            if (!sharingPathReady()) {
                 Toast.makeText(getContext(), R.string.audio_share_hw_offload_must_be_disabled, Toast.LENGTH_LONG).show();
                 return true;
             }
