@@ -68,10 +68,11 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
     // Test: share with A2DP offload kept on (the stack sends the offload start for both links)
     private static final String PROP_OFFLOAD_PROBE = "persist.bluetooth.a2dp_sharing.offload_probe";
 
-    // Sharing runs on software encoding, unless the offload probe is on
+    // Sharing runs on software encoding, unless the offload probe is on (aosp, true or qti)
     private static boolean sharingPathReady() {
+        String probe = android.os.SystemProperties.get(PROP_OFFLOAD_PROBE, "");
         return android.os.SystemProperties.getBoolean("persist.bluetooth.a2dp_offload.disabled", false)
-                || android.os.SystemProperties.getBoolean(PROP_OFFLOAD_PROBE, false);
+                || !(probe.isEmpty() || probe.equals("false") || probe.equals("0"));
     }
 
     private static final java.util.concurrent.ExecutorService sOffloadExecutor =
