@@ -46,8 +46,7 @@
             android:entries="@array/audio_share_codec_entries"
             android:entryValues="@array/audio_share_codec_values"
             android:defaultValue="auto"
-            android:persistent="false"
-            app:useSimpleSummaryProvider="true" />
+            android:persistent="false" />
 
         <Preference
             android:key="audio_share_info"

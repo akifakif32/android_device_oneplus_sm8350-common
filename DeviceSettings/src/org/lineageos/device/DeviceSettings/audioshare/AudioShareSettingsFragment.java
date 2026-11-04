@@ -610,6 +610,7 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
         if (mSeparateAppSoundPref != null) {
             mSeparateAppSoundPref.setEnabled(masterEnabled && btOk);
         }
+        refreshSharingCodecSummary();
     }
 
     private String getDeviceDisplayName(BluetoothDevice device) {
@@ -684,7 +685,9 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
             if (mIsSharingActive && getContext() != null) {
                 Toast.makeText(requireContext(), R.string.audio_share_codec_next_time, Toast.LENGTH_SHORT).show();
             }
-            return true;
+            mSharingCodecPref.setValue(codec);
+            refreshSharingCodecSummary();
+            return false;
         } else if (preference == mPrimaryVolumePref) {
             int percent = (Integer) newValue;
             int maxVol = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -1034,6 +1037,71 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
     private boolean isA2dpConnected(BluetoothDevice device) {
         if (device == null || mBluetoothA2dp == null) return false;
         return mBluetoothA2dp.getConnectionState(device) == BluetoothProfile.STATE_CONNECTED;
+    }
+
+    // Same order as OplusA2dpSharingService: the codec shared is the first both headsets support
+    private static final int[] SHARING_CODEC_ORDER = {
+        BluetoothCodecConfig.SOURCE_CODEC_TYPE_LDAC,
+        BluetoothCodecConfig.SOURCE_CODEC_TYPE_APTX_HD,
+        BluetoothCodecConfig.SOURCE_CODEC_TYPE_APTX,
+        BluetoothCodecConfig.SOURCE_CODEC_TYPE_AAC,
+        BluetoothCodecConfig.SOURCE_CODEC_TYPE_SBC,
+    };
+
+    private static boolean supportsCodec(BluetoothCodecStatus status, int type) {
+        if (status == null) return false;
+        for (BluetoothCodecConfig cap : status.getCodecsSelectableCapabilities()) {
+            if (cap.getCodecType() == type
+                    && (cap.getChannelMode() & BluetoothCodecConfig.CHANNEL_MODE_STEREO) != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ponytail: compares codec types only, the service also matches sample rate and bit depth
+    private int predictSharingCodec(String choice) {
+        if (!(mBluetoothA2dp instanceof BluetoothA2dp) || mPrimaryDevice == null || mSecondaryDevice == null) {
+            return -1;
+        }
+        BluetoothA2dp a2dp = (BluetoothA2dp) mBluetoothA2dp;
+        BluetoothCodecStatus prim = a2dp.getCodecStatus(mPrimaryDevice);
+        BluetoothCodecStatus sec = a2dp.getCodecStatus(mSecondaryDevice);
+        String[] values = getResources().getStringArray(R.array.audio_share_codec_values);
+        for (int i = 1; i < values.length; i++) {
+            if (values[i].equals(choice)) {
+                int type = SHARING_CODEC_ORDER[i - 1];
+                if (supportsCodec(prim, type) && supportsCodec(sec, type)) return type;
+            }
+        }
+        for (int type : SHARING_CODEC_ORDER) {
+            if (supportsCodec(prim, type) && supportsCodec(sec, type)) return type;
+        }
+        return -1;
+    }
+
+    private void refreshSharingCodecSummary() {
+        if (mSharingCodecPref == null || !isAdded()) return;
+        String choice = mSharingCodecPref.getValue() != null ? mSharingCodecPref.getValue() : "auto";
+        String label = String.valueOf(mSharingCodecPref.getEntry());
+        String result = null;
+        try {
+            if (mIsSharingActive && mBluetoothA2dp instanceof BluetoothA2dp && mPrimaryDevice != null) {
+                BluetoothCodecStatus status = ((BluetoothA2dp) mBluetoothA2dp).getCodecStatus(mPrimaryDevice);
+                if (status != null && status.getCodecConfig() != null) {
+                    result = getString(R.string.audio_share_codec_in_use,
+                            codecTypeName(status.getCodecConfig().getCodecType()));
+                }
+            } else {
+                int type = predictSharingCodec(choice);
+                result = type != -1
+                        ? getString(R.string.audio_share_codec_will_use, codecTypeName(type))
+                        : getString(R.string.audio_share_codec_pick_devices);
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "refreshSharingCodecSummary: " + t.getMessage());
+        }
+        mSharingCodecPref.setSummary(result != null ? label + "\n" + result : label);
     }
 
     /**

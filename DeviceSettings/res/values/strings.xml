@@ -203,6 +203,9 @@
     <string name="audio_share_enable_summary">Turns hardware offload off while on, and back on when turned off</string>
     <string name="audio_share_codec_title">Sharing Codec</string>
     <string name="audio_share_codec_next_time">Applies the next time sharing starts</string>
+    <string name="audio_share_codec_will_use">Will share %1$s with these two headsets</string>
+    <string name="audio_share_codec_in_use">Sharing %1$s now</string>
+    <string name="audio_share_codec_pick_devices">Pick both headsets to see the codec</string>
     <string name="audio_share_hardware_category">Hardware &amp; Audio Engine</string>
     <string name="audio_share_hardware_desc">Snapdragon 888 (SM8350) + WCN6855 Bluetooth Fluoride dual-A2DP software stream engine.</string>
     <string name="audio_share_hw_offload_must_be_disabled">Disable Hardware Offload first to use Audio Sharing</string>
