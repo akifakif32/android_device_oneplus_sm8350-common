@@ -86,6 +86,11 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.bluetooth.xml \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.bluetooth_le.xml
 
+# AAC VBR source capability, as stock (persist.vendor.qcom.bluetooth.aac_vbr_ctl.enabled).
+# persist.bluetooth.* is bluetooth_prop, which vendor_init can't set from vendor.prop.
+PRODUCT_PRODUCT_PROPERTIES += \
+    persist.bluetooth.a2dp_aac.vbr_supported=true
+
 # Boot control
 PRODUCT_PACKAGES += \
     android.hardware.boot-service.qti \
