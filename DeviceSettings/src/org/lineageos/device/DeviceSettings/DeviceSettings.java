@@ -44,6 +44,7 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.android.settingslib.widget.SettingsBasePreferenceFragment;
 
 import android.util.ArrayMap;
+import java.util.List;
 import java.util.Map;
 import org.lineageos.internal.util.FileUtils;
 import org.lineageos.device.DeviceSettings.iris.IrisMemcService;
@@ -206,7 +207,7 @@ public class DeviceSettings extends SettingsBasePreferenceFragment
         if (mBluetoothA2dp == null) {
             return null;
         }
-        BluetoothDevice device = mBluetoothA2dp.getActiveDevice();
+        BluetoothDevice device = getActiveA2dpDevice();
         BluetoothCodecStatus status = device != null ? mBluetoothA2dp.getCodecStatus(device) : null;
         BluetoothCodecConfig config = status != null ? status.getCodecConfig() : null;
         return config != null && config.getCodecType() == CODEC_TYPE_APTX_ADAPTIVE ? config : null;
@@ -237,7 +238,17 @@ public class DeviceSettings extends SettingsBasePreferenceFragment
                 .setCodecSpecific3(current.getCodecSpecific3())
                 .setCodecSpecific4(lowLatency ? APTX_MODE_LL : APTX_MODE_HQ)
                 .build();
-        mBluetoothA2dp.setCodecConfigPreference(mBluetoothA2dp.getActiveDevice(), config);
+        BluetoothDevice device = getActiveA2dpDevice();
+        if (device != null) {
+            mBluetoothA2dp.setCodecConfigPreference(device, config);
+        }
+    }
+
+    // BluetoothA2dp.getActiveDevice() is hidden; the adapter's system API is what the stubs carry
+    private BluetoothDevice getActiveA2dpDevice() {
+        List<BluetoothDevice> active = mBluetoothAdapter != null
+                ? mBluetoothAdapter.getActiveDevices(BluetoothProfile.A2DP) : List.of();
+        return active.isEmpty() ? null : active.get(0);
     }
 
     @Override
