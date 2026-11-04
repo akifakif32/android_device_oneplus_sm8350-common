@@ -28,6 +28,13 @@ public class AudioVolumePreference extends Preference implements SeekBar.OnSeekB
     private int mValue = 80;
     private int mLastNonZeroValue = 80;
 
+    // Volume by default; setRange() reuses the slider for other values (sync adjust in ms)
+    private int mMax = 100;
+    private String mZeroLabel = "Mute";
+    private String mUnit = "%";
+    private int mIconRes = R.drawable.ic_volume_up;
+    private int mZeroIconRes = R.drawable.ic_volume_mute;
+
     private TextView mBadgeView;
     private ImageView mIconView;
     private SeekBar mSeekBar;
@@ -67,7 +74,7 @@ public class AudioVolumePreference extends Preference implements SeekBar.OnSeekB
         mSeekBar = (SeekBar) holder.findViewById(R.id.volume_seekbar);
 
         if (mSeekBar != null) {
-            mSeekBar.setMax(100);
+            mSeekBar.setMax(mMax);
             mSeekBar.setMin(0);
             mSeekBar.setProgress(mValue);
             mSeekBar.setEnabled(isEnabled());
@@ -82,7 +89,7 @@ public class AudioVolumePreference extends Preference implements SeekBar.OnSeekB
                     mLastNonZeroValue = mValue;
                     setValue(0, true);
                 } else {
-                    setValue(mLastNonZeroValue > 0 ? mLastNonZeroValue : 80, true);
+                    setValue(mLastNonZeroValue > 0 ? mLastNonZeroValue : mMax * 4 / 5, true);
                 }
             });
         }
@@ -94,12 +101,24 @@ public class AudioVolumePreference extends Preference implements SeekBar.OnSeekB
         return mValue;
     }
 
+    public void setRange(int max, String zeroLabel, String unit, int iconRes, int zeroIconRes) {
+        mMax = max;
+        mZeroLabel = zeroLabel;
+        mUnit = unit;
+        mIconRes = iconRes;
+        mZeroIconRes = zeroIconRes;
+        if (mSeekBar != null) {
+            mSeekBar.setMax(mMax);
+        }
+        updateViews();
+    }
+
     public void setValue(int value) {
         setValue(value, false);
     }
 
     public void setValue(int value, boolean notify) {
-        int clamped = Math.max(0, Math.min(100, value));
+        int clamped = Math.max(0, Math.min(mMax, value));
         if (mValue != clamped) {
             mValue = clamped;
             if (clamped > 0) {
@@ -117,10 +136,10 @@ public class AudioVolumePreference extends Preference implements SeekBar.OnSeekB
 
     private void updateViews() {
         if (mBadgeView != null) {
-            mBadgeView.setText(mValue == 0 ? "Mute" : (mValue + "%"));
+            mBadgeView.setText(mValue == 0 ? mZeroLabel : (mValue + mUnit));
         }
         if (mIconView != null) {
-            mIconView.setImageResource(mValue == 0 ? R.drawable.ic_volume_mute : R.drawable.ic_volume_up);
+            mIconView.setImageResource(mValue == 0 ? mZeroIconRes : mIconRes);
         }
     }
 

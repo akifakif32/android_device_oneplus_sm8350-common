@@ -206,8 +206,7 @@
     <string name="audio_share_codec_will_use">Will share %1$s with these two headsets</string>
     <string name="audio_share_codec_in_use">Sharing %1$s now</string>
     <string name="audio_share_codec_pick_devices">Pick both headsets to see the codec</string>
-    <string name="audio_share_sync_delay_title">Sync adjust (ms)</string>
-    <string name="audio_share_sync_delay_summary">Delays the sharing headset. If the primary headset plays early, swap roles first</string>
+    <string name="audio_share_sync_delay_title">Sync Adjust</string>
     <string name="audio_share_hardware_category">Hardware &amp; Audio Engine</string>
     <string name="audio_share_hardware_desc">Snapdragon 888 (SM8350) + WCN6855 Bluetooth Fluoride dual-A2DP software stream engine.</string>
     <string name="audio_share_idle_status">Ready to share audio</string>
@@ -227,7 +226,7 @@
     <string name="audio_share_start_action">Start Sharing Audio</string>
     <string name="audio_share_stop_action">Stop Sharing Audio</string>
     <string name="audio_share_swap_roles">Swap Headset Roles</string>
-    <string name="audio_share_swap_roles_summary">Promote Secondary headset to Primary and vice-versa</string>
+    <string name="audio_share_swap_roles_summary">Promote Secondary headset to Primary and vice-versa. Sync Adjust delays the Secondary: swap if the Primary plays early</string>
     <string name="audio_share_sync_volumes">Sync Volumes</string>
     <string name="audio_share_sync_volumes_summary">Adjust both headsets proportionally with physical volume rocker</string>
     <string name="audio_share_tile_label">Audio Sharing</string>

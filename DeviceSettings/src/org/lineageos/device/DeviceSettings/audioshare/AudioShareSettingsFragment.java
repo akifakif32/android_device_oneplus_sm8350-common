@@ -29,7 +29,6 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.oplus.bluetooth.OplusA2dpSharingManager;
@@ -79,7 +78,7 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
     private SwitchPreferenceCompat mHwOffloadSwitch;
     private Preference mHardwareEngineInfoPref;
     private ListPreference mSharingCodecPref;
-    private SeekBarPreference mSyncDelayPref;
+    private AudioVolumePreference mSyncDelayPref;
     private volatile boolean mIsOffloadSwitching = false;
     private Preference mPrimaryDeviceInfo;
     private Preference mCodecInfoPref;
@@ -274,6 +273,8 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
         mHardwareEngineInfoPref = findPreference(KEY_HARDWARE_ENGINE_INFO);
         mSyncDelayPref = findPreference(KEY_SYNC_DELAY);
         if (mSyncDelayPref != null) {
+            // 0-300 ms, the sharing (secondary) headset is delayed by it
+            mSyncDelayPref.setRange(300, "Off", " ms", R.drawable.ic_dock_link, R.drawable.ic_dock_link);
             mSyncDelayPref.setValue(android.os.SystemProperties.getInt(PROP_SYNC_DELAY, 0));
             mSyncDelayPref.setOnPreferenceChangeListener(this);
         }
