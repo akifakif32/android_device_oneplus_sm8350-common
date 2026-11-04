@@ -941,18 +941,6 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
         BluetoothDevice oldSec = mSecondaryDevice;
         Log.i(TAG, "swapRoles requested: oldPrim=" + oldPrim + ", oldSec=" + oldSec);
 
-        // The active-device switch drops the old headset before the new one is ready, and media
-        // falls back to the speaker for ~300 ms; keep music muted until both are routed again.
-        // ponytail: fixed 1.5 s window (covers the 800 ms re-share below); key it off the
-        // route change if it ever proves too short.
-        final boolean mutedHere = mAudioManager != null
-                && !mAudioManager.isStreamMute(AudioManager.STREAM_MUSIC);
-        if (mutedHere) {
-            mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
-            mHandler.postDelayed(() -> mAudioManager.adjustStreamVolume(
-                    AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0), 1500);
-        }
-
         boolean wasSharing = mIsSharingActive;
         if (wasSharing && mSharingManager != null) {
             mSharingManager.stopSharing();
