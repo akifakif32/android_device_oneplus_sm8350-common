@@ -243,4 +243,6 @@
     <string name="separate_app_sound_device_speaker">Phone Speaker</string>
     <string name="separate_app_sound_device_bt">Shared Bluetooth Headsets</string>
     <string name="audio_share_category_title">Bluetooth</string>
+    <string name="aptx_adaptive_low_latency_title">aptX Adaptive low latency</string>
+    <string name="aptx_adaptive_low_latency_summary">Lower audio delay for games and video at a lower bitrate. Available while an aptX Adaptive headset is playing</string>
 </resources>

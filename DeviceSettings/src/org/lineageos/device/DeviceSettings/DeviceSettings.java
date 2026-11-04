@@ -16,6 +16,13 @@
 
 package org.lineageos.device.DeviceSettings;
 
+import android.bluetooth.BluetoothA2dp;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothCodecConfig;
+import android.bluetooth.BluetoothCodecStatus;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.Intent;
@@ -55,6 +62,13 @@ public class DeviceSettings extends SettingsBasePreferenceFragment
     private static final String KEY_VIBSTRENGTH = "vib_strength";
     private static final String KEY_VIDEO_COLOR = "video_color";
     private static final String KEY_VIDEO_SR = "video_sr";
+    private static final String KEY_APTX_LOW_LATENCY = "aptx_adaptive_low_latency";
+
+    // Native BTAV_A2DP_CODEC_INDEX_SOURCE_APTX_ADAPTIVE, and the aptX Adaptive mode bits of
+    // codec_specific_4 the Bluetooth stack takes (Qualcomm APTX_HQ / APTX_LL)
+    private static final int CODEC_TYPE_APTX_ADAPTIVE = 7;
+    private static final long APTX_MODE_HQ = 0x1000;
+    private static final long APTX_MODE_LL = 0x2000;
 
     private static final long[] TEST_VIB_PATTERN = { 0, 5 };
     private static final String DEFAULT_VIB_LEVEL = "3";
@@ -67,6 +81,23 @@ public class DeviceSettings extends SettingsBasePreferenceFragment
     private SwitchPreferenceCompat mUSB2FastChargeModeSwitch;
     private CustomSeekBarPreference mVibratorStrengthPreference;
     private Vibrator mVibrator;
+
+    private SwitchPreferenceCompat mAptxLowLatencySwitch;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothA2dp mBluetoothA2dp;
+    private final BluetoothProfile.ServiceListener mA2dpListener =
+            new BluetoothProfile.ServiceListener() {
+        @Override
+        public void onServiceConnected(int profile, BluetoothProfile proxy) {
+            mBluetoothA2dp = (BluetoothA2dp) proxy;
+            updateAptxLowLatency();
+        }
+
+        @Override
+        public void onServiceDisconnected(int profile) {
+            mBluetoothA2dp = null;
+        }
+    };
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -104,6 +135,22 @@ public class DeviceSettings extends SettingsBasePreferenceFragment
         mGameModeSwitch = bindSwitchPref(KEY_GAME_SWITCH, FILE_GAME);
         mEdgeTouchSwitch = bindSwitchPref(KEY_EDGE_TOUCH, FILE_EDGE);
         mUSB2FastChargeModeSwitch = bindSwitchPref(KEY_USB2_SWITCH, FILE_FAST_CHARGE);
+
+        mAptxLowLatencySwitch = findPreference(KEY_APTX_LOW_LATENCY);
+        mAptxLowLatencySwitch.setEnabled(false);
+        mAptxLowLatencySwitch.setOnPreferenceChangeListener((pref, value) -> {
+            BluetoothCodecConfig current = getAptxAdaptiveConfig();
+            if (current == null) {
+                return false;
+            }
+            setAptxMode(current, (Boolean) value);
+            return true;
+        });
+        BluetoothManager bluetoothManager = getContext().getSystemService(BluetoothManager.class);
+        mBluetoothAdapter = bluetoothManager != null ? bluetoothManager.getAdapter() : null;
+        if (mBluetoothAdapter != null) {
+            mBluetoothAdapter.getProfileProxy(getContext(), mA2dpListener, BluetoothProfile.A2DP);
+        }
 
         mVibratorStrengthPreference = (CustomSeekBarPreference) findPreference(KEY_VIBSTRENGTH);
         if (Utils.fileWritable(FILE_LEVEL)) {
@@ -144,6 +191,53 @@ public class DeviceSettings extends SettingsBasePreferenceFragment
         if (getActivity() != null) {
             getActivity().setTitle(R.string.device_title);
         }
+        updateAptxLowLatency();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mBluetoothAdapter != null && mBluetoothA2dp != null) {
+            mBluetoothAdapter.closeProfileProxy(BluetoothProfile.A2DP, mBluetoothA2dp);
+        }
+        super.onDestroy();
+    }
+
+    private BluetoothCodecConfig getAptxAdaptiveConfig() {
+        if (mBluetoothA2dp == null) {
+            return null;
+        }
+        BluetoothDevice device = mBluetoothA2dp.getActiveDevice();
+        BluetoothCodecStatus status = device != null ? mBluetoothA2dp.getCodecStatus(device) : null;
+        BluetoothCodecConfig config = status != null ? status.getCodecConfig() : null;
+        return config != null && config.getCodecType() == CODEC_TYPE_APTX_ADAPTIVE ? config : null;
+    }
+
+    private void updateAptxLowLatency() {
+        if (mAptxLowLatencySwitch == null) {
+            return;
+        }
+        BluetoothCodecConfig current = getAptxAdaptiveConfig();
+        mAptxLowLatencySwitch.setEnabled(current != null);
+        // The stack keeps the mode only while Bluetooth runs, so send the saved one again.
+        // ponytail: re-applied only when this page opens; a Bluetooth restart goes back to HQ until then
+        if (current != null && mAptxLowLatencySwitch.isChecked()) {
+            setAptxMode(current, true);
+        }
+    }
+
+    private void setAptxMode(BluetoothCodecConfig current, boolean lowLatency) {
+        BluetoothCodecConfig config = new BluetoothCodecConfig.Builder()
+                .setExtendedCodecType(current.getExtendedCodecType())
+                .setCodecPriority(BluetoothCodecConfig.CODEC_PRIORITY_HIGHEST)
+                .setSampleRate(current.getSampleRate())
+                .setBitsPerSample(current.getBitsPerSample())
+                .setChannelMode(current.getChannelMode())
+                .setCodecSpecific1(current.getCodecSpecific1())
+                .setCodecSpecific2(current.getCodecSpecific2())
+                .setCodecSpecific3(current.getCodecSpecific3())
+                .setCodecSpecific4(lowLatency ? APTX_MODE_LL : APTX_MODE_HQ)
+                .build();
+        mBluetoothA2dp.setCodecConfigPreference(mBluetoothA2dp.getActiveDevice(), config);
     }
 
     @Override
