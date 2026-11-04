@@ -29,6 +29,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.oplus.bluetooth.OplusA2dpSharingManager;
@@ -61,6 +62,9 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
     private static final String KEY_A2DP_HW_OFFLOAD = "bluetooth_a2dp_hw_offload";
     private static final String KEY_HARDWARE_ENGINE_INFO = "hardware_engine_info";
     private static final String KEY_SHARING_CODEC = "audio_share_codec";
+    private static final String KEY_SYNC_DELAY = "audio_share_sync_delay";
+    // Read per packet by the Bluetooth stack (bta_av_sharing_hold)
+    private static final String PROP_SYNC_DELAY = "persist.bluetooth.a2dp_sharing.delay_ms";
     // Read by OplusA2dpSharingService when sharing starts
     private static final String PROP_SHARING_CODEC = "persist.bluetooth.a2dp_sharing.codec";
     // Earlier versions switched hardware offload off for sharing and recorded it here, so turning
@@ -75,6 +79,7 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
     private SwitchPreferenceCompat mHwOffloadSwitch;
     private Preference mHardwareEngineInfoPref;
     private ListPreference mSharingCodecPref;
+    private SeekBarPreference mSyncDelayPref;
     private volatile boolean mIsOffloadSwitching = false;
     private Preference mPrimaryDeviceInfo;
     private Preference mCodecInfoPref;
@@ -267,6 +272,11 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
         mSeparateAppSoundPref = findPreference(KEY_SEPARATE_APP_SOUND);
         mHwOffloadSwitch = findPreference(KEY_A2DP_HW_OFFLOAD);
         mHardwareEngineInfoPref = findPreference(KEY_HARDWARE_ENGINE_INFO);
+        mSyncDelayPref = findPreference(KEY_SYNC_DELAY);
+        if (mSyncDelayPref != null) {
+            mSyncDelayPref.setValue(android.os.SystemProperties.getInt(PROP_SYNC_DELAY, 0));
+            mSyncDelayPref.setOnPreferenceChangeListener(this);
+        }
         mSharingCodecPref = findPreference(KEY_SHARING_CODEC);
         if (mSharingCodecPref != null) {
             mSharingCodecPref.setValue(android.os.SystemProperties.get(PROP_SHARING_CODEC, "auto"));
@@ -599,6 +609,9 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
         if (mSyncVolumesSwitch != null) {
             mSyncVolumesSwitch.setEnabled(masterEnabled && btOk && mIsSharingActive);
         }
+        if (mSyncDelayPref != null) {
+            mSyncDelayPref.setEnabled(masterEnabled && btOk);
+        }
         if (mSeparateAppSoundPref != null) {
             mSeparateAppSoundPref.setEnabled(masterEnabled && btOk);
         }
@@ -661,6 +674,14 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
             mHandler.postDelayed(this::refreshCodecInfo, 400);
             updateUiState();
             updateHardwareEngineDebugInfo();
+            return true;
+        } else if (preference == mSyncDelayPref) {
+            try {
+                android.os.SystemProperties.set(PROP_SYNC_DELAY, String.valueOf((Integer) newValue));
+            } catch (Throwable t) {
+                Log.e(TAG, "Failed to set " + PROP_SYNC_DELAY, t);
+                return false;
+            }
             return true;
         } else if (preference == mSharingCodecPref) {
             String codec = (String) newValue;

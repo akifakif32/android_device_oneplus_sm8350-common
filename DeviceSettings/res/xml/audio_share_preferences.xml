@@ -118,6 +118,18 @@
             android:persistent="false"
             android:defaultValue="80" />
 
+        <SeekBarPreference
+            android:key="audio_share_sync_delay"
+            android:title="@string/audio_share_sync_delay_title"
+            android:summary="@string/audio_share_sync_delay_summary"
+            android:icon="@drawable/ic_dock_link"
+            android:max="300"
+            app:min="0"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true"
+            android:persistent="false"
+            android:defaultValue="0" />
+
         <Preference
             android:key="audio_share_swap_roles"
             android:title="@string/audio_share_swap_roles"
