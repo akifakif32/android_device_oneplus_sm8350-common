@@ -1,0 +1,48 @@
+diff --git a/hal/audio_hw.c b/hal/audio_hw.c
+index 356d342..6fbd494 100644
+--- a/hal/audio_hw.c
++++ b/hal/audio_hw.c
+@@ -5331,6 +5331,7 @@ int route_output_stream(struct stream_out *out,
+     struct listnode new_devices;
+     bool bypass_a2dp = false;
+     bool reconfig = false;
++    bool a2dp_lost = false;
+     unsigned long service_interval = 0;
+ 
+     ALOGD("%s: enter: usecase(%d: %s) devices %x",
+@@ -5368,7 +5369,14 @@ int route_output_stream(struct stream_out *out,
+             !audio_extn_a2dp_source_is_ready() &&
+             !adev->bt_sco_on) {
+         reassign_device_list(&new_devices, AUDIO_DEVICE_OUT_SPEAKER, "");
++        /*
++         * Playback is not paused when A2DP goes away because of a switch to
++         * another A2DP device, so write silence until the stream is routed
++         * again rather than play it on the speaker.
++         */
++        a2dp_lost = !is_offload_usecase(out->usecase);
+     }
++    out->a2dp_lost_muted = a2dp_lost;
+     /*
+      * When USB headset is disconnected the music playback paused
+      * and the policy manager send routing=0. But if the USB is connected
+@@ -6631,7 +6639,7 @@ static ssize_t out_write(struct audio_stream_out *stream, const void *buffer,
+     } else {
+         if (out->pcm) {
+             size_t bytes_to_write = bytes;
+-            if (out->muted)
++            if (out->muted || out->a2dp_lost_muted)
+                 memset((void *)buffer, 0, bytes);
+             ALOGV("%s: frames=%zu, frame_size=%zu, bytes_to_write=%zu",
+                      __func__, frames, frame_size, bytes_to_write);
+diff --git a/hal/audio_hw.h b/hal/audio_hw.h
+index ab6cefd..0974e20 100644
+--- a/hal/audio_hw.h
++++ b/hal/audio_hw.h
+@@ -549,6 +549,7 @@ struct stream_out {
+ 
+     bool is_iec61937_info_available;
+     bool a2dp_muted; /* guarded by latch_lock */
++    bool a2dp_lost_muted; /* guarded by lock */
+     float volume_l;
+     float volume_r;
+     bool apply_volume;
