@@ -941,11 +941,8 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
         BluetoothDevice oldSec = mSecondaryDevice;
         Log.i(TAG, "swapRoles requested: oldPrim=" + oldPrim + ", oldSec=" + oldSec);
 
-        boolean wasSharing = mIsSharingActive;
-        if (wasSharing && mSharingManager != null) {
-            mSharingManager.stopSharing();
-        }
-
+        // While sharing, the Bluetooth stack's sharing service takes the active device switch as a
+        // role swap (the old primary becomes the sharing peer), with no stop and restart
         try {
             Method setActiveDeviceMethod = mBluetoothA2dp.getClass().getMethod("setActiveDevice", BluetoothDevice.class);
             setActiveDeviceMethod.invoke(mBluetoothA2dp, oldSec);
@@ -958,16 +955,6 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
 
         refreshBluetoothDevices();
         refreshCodecInfo();
-
-        if (wasSharing && mSharingManager != null) {
-            mHandler.postDelayed(() -> {
-                Log.i(TAG, "swapRoles: re-initiating sharing with new secondary=" + oldPrim);
-                if (mSecondaryDevice != null && mSharingManager != null) {
-                    mSharingManager.startSharing(mSecondaryDevice, OplusA2dpSharingManager.SHARING_TYPE_BONDED);
-                }
-            }, 800);
-
-        }
     }
 
     private void showSelectPrimaryDeviceDialog() {
