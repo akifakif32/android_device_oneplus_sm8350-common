@@ -39,6 +39,16 @@
             android:summary="@string/audio_share_enable_summary"
             android:defaultValue="false" />
 
+        <ListPreference
+            android:key="audio_share_codec"
+            android:title="@string/audio_share_codec_title"
+            android:icon="@drawable/ic_cpu_chip"
+            android:entries="@array/audio_share_codec_entries"
+            android:entryValues="@array/audio_share_codec_values"
+            android:defaultValue="auto"
+            android:persistent="false"
+            app:useSimpleSummaryProvider="true" />
+
         <Preference
             android:key="audio_share_info"
             android:dependency="audio_share_master_switch"
