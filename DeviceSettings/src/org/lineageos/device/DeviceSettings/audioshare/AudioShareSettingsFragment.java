@@ -788,7 +788,6 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
             Toast.makeText(requireContext(), R.string.bluetooth_a2dp_hw_offload_toast, Toast.LENGTH_SHORT).show();
         }
 
-        final Context appContext = (getContext() != null) ? getContext().getApplicationContext() : null;
         sOffloadExecutor.execute(() -> {
             boolean disabled = !enableOffload;
             try {
@@ -804,67 +803,40 @@ public class AudioShareSettingsFragment extends PreferenceFragmentCompat
             try {
                 BluetoothAdapter bt = BluetoothAdapter.getDefaultAdapter();
                 if (bt != null && bt.isEnabled()) {
-                    if (appContext != null) {
-                        final BroadcastReceiver[] cycleReceiverHolder = new BroadcastReceiver[1];
-                        cycleReceiverHolder[0] = new BroadcastReceiver() {
-                            @Override
-                            public void onReceive(Context context, Intent intent) {
-                                if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(intent.getAction())) {
-                                    int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
-                                    if (state == BluetoothAdapter.STATE_OFF) {
-                                        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-                                        if (adapter != null) {
-                                            adapter.enable();
-                                        }
-                                    } else if (state == BluetoothAdapter.STATE_ON) {
-                                        try {
-                                            context.unregisterReceiver(this);
-                                            cycleReceiverHolder[0] = null;
-                                        } catch (Exception ignored) {}
-                                        mHandler.post(() -> {
-                                            mIsOffloadSwitching = false;
-                                            if (isAdded()) {
-                                                refreshHardwareOffloadSwitch();
-                                                updateUiState();
-                                                refreshBluetoothDevices();
-                                                refreshCodecInfo();
-                                                updateHardwareEngineDebugInfo();
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                        };
-                        appContext.registerReceiver(cycleReceiverHolder[0],
-                                new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-                        // Safety guard: unregister after 6 seconds if STATE_ON didn't fire,
-                        // and force-enable adapter if it was left disabled
-                        mHandler.postDelayed(() -> {
-                            try {
-                                if (cycleReceiverHolder[0] != null) {
-                                    appContext.unregisterReceiver(cycleReceiverHolder[0]);
-                                    cycleReceiverHolder[0] = null;
-                                }
-                            } catch (Exception ignored) {}
-                            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-                            if (adapter != null && !adapter.isEnabled()) {
-                                Log.w(TAG, "Offload cycle safety timer: adapter still disabled, forcing enable");
-                                adapter.enable();
-                            }
-                            mIsOffloadSwitching = false;
-                            if (isAdded()) {
-                                refreshHardwareOffloadSwitch();
-                                updateUiState();
-                            }
-                        }, 6000);
-                    }
                     bt.disable();
+                    // enable() sent while the adapter is still turning off can be dropped,
+                    // so turn it back on only once it is fully off, and retry once
+                    waitForAdapterState(bt, BluetoothAdapter.STATE_OFF);
+                    bt.enable();
+                    if (!waitForAdapterState(bt, BluetoothAdapter.STATE_ON)) {
+                        Log.w(TAG, "Bluetooth not back on after the offload switch, enabling again");
+                        bt.enable();
+                        waitForAdapterState(bt, BluetoothAdapter.STATE_ON);
+                    }
                 }
             } catch (Throwable t) {
                 Log.e(TAG, "Failed to cycle BluetoothAdapter", t);
-                mIsOffloadSwitching = false;
             }
+            mHandler.post(() -> {
+                mIsOffloadSwitching = false;
+                if (isAdded()) {
+                    refreshHardwareOffloadSwitch();
+                    updateUiState();
+                    refreshBluetoothDevices();
+                    refreshCodecInfo();
+                    updateHardwareEngineDebugInfo();
+                }
+            });
         });
+    }
+
+    // Polls the adapter state for up to 8 s
+    private static boolean waitForAdapterState(BluetoothAdapter bt, int state) throws InterruptedException {
+        for (int i = 0; i < 80; i++) {
+            if (bt.getState() == state) return true;
+            Thread.sleep(100);
+        }
+        return bt.getState() == state;
     }
 
     @Override
