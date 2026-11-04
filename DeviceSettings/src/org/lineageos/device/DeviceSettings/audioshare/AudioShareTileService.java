@@ -23,7 +23,6 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
@@ -142,13 +141,6 @@ public class AudioShareTileService extends TileService {
         mLastClickTime = now;
 
         if (mSharingManager == null || mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-            launchActivity();
-            return;
-        }
-
-        boolean offloadDisabled = android.os.SystemProperties.getBoolean("persist.bluetooth.a2dp_offload.disabled", false);
-        if (!offloadDisabled) {
-            Toast.makeText(this, R.string.audio_share_hw_offload_must_be_disabled, Toast.LENGTH_LONG).show();
             launchActivity();
             return;
         }
