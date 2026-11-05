@@ -62,6 +62,8 @@ blob_fixups: blob_fixups_user_type = {
         .apktool_patch('blob-patches/WfdCommon.patch'),
     'system_ext/lib64/libwfdservice.so': blob_fixup()
         .replace_needed('android.media.audio.common.types-V4-cpp.so', 'android.media.audio.common.types-V5-cpp.so'),
+    'vendor/bin/hw/qconfigservice': blob_fixup()
+        .sig_replace('2F 6D 79 5F 70 72 6F 64 75 63 74 2F 76 65 6E 64 6F 72 2F 65 74 63 2F 71 63 6F 6E 66 69 67 70 72 65 73 65 74 73 2E 6A 73 6F 6E', '2F 76 65 6E 64 6F 72 2F 65 74 63 2F 71 63 6F 6E 66 69 67 70 72 65 73 65 74 73 2E 6A 73 6F 6E 00 00 00 00 00 00 00 00 00 00 00'),
     'vendor/bin/init.kernel.post_boot-lahaina.sh': blob_fixup()
         .regex_replace('uag', 'schedutil'),
     ('vendor/etc/media_lahaina/video_system_specs.json', 'vendor/etc/media_yupik_v1/video_system_specs.json'): blob_fixup()
